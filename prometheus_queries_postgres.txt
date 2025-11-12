@@ -1,0 +1,32 @@
+# PromQL Queries for PostgreSQL Dashboard
+# ========================================
+
+# 1. Количество активных подключений к базе skydata
+pg_stat_database_numbackends{datname="skydata"}
+
+# 2. Размер базы данных skydata (в байтах)
+pg_database_size_bytes{datname="skydata"}
+
+# 3. Размер базы данных (в GB)
+pg_database_size_bytes{datname="skydata"} / 1024 / 1024 / 1024
+
+# 4. Uptime PostgreSQL (секунды) - может не работать на всех версиях
+time() - pg_postmaster_start_time_seconds
+
+# 5. Количество коммитов (транзакций) за последние 5 минут
+rate(pg_stat_database_xact_commit{datname="skydata"}[5m])
+
+# 6. Количество откатов (rollbacks) за последние 5 минут
+rate(pg_stat_database_xact_rollback{datname="skydata"}[5m])
+
+# 7. Количество блоков, прочитанных с диска
+rate(pg_stat_database_blks_read{datname="skydata"}[5m])
+
+# 8. Количество блоков из кеша
+rate(pg_stat_database_blks_hit{datname="skydata"}[5m])
+
+# 9. Cache Hit Ratio (эффективность кеша, в процентах)
+100 * (sum(rate(pg_stat_database_blks_hit{datname="skydata"}[5m])) / (sum(rate(pg_stat_database_blks_hit{datname="skydata"}[5m])) + sum(rate(pg_stat_database_blks_read{datname="skydata"}[5m]))))
+
+# 10. Количество строк, возвращённых запросами
+pg_stat_database_tup_returned{datname="skydata"}
