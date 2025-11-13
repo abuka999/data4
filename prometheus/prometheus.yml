@@ -18,7 +18,8 @@ scrape_configs:
     static_configs:
       - targets: ['node_exporter:9100']
 
-  # Custom Exporter (будем добавлять позже)
+
   - job_name: 'custom_exporter'
     static_configs:
-      - targets: ['host.docker.internal:8000']
+      - targets: ['172.17.0.1:9200']
+
